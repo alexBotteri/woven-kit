@@ -1,7 +1,7 @@
 import SwiftUI
 
 public struct ListeningView: View {
-    let started: Bool
+    public let started: Bool
     @State private var yOffset = 0.0
     @State private var xOffset = 0.0
     @State private var left: Bool = true
