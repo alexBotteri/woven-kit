@@ -42,7 +42,8 @@ public final class MicrophoneLevels: ObservableObject {
     public func updateLevels() {
         guard audioRecorder != nil else { return }
         audioRecorder.updateMeters()
-        currentLevel = min(Double(audioRecorder.averagePower(forChannel: 0))/80.0, 1.0)
+        let level = Double(160+audioRecorder.averagePower(forChannel: 0))
+        currentLevel = max((level - 80)/80, 0)
     }
     
     deinit {

@@ -10,15 +10,16 @@ import SwiftUI
 public struct TalkingView: View {
     // Value that controls the level of animated view: 0 - bottom position, 1 - top most position
     @Binding var level: Double
+    @Binding var started: Bool
     @State private var yOffset = 0.0
     @State private var xOffset = 0.0
-    @State private var started: Bool = false
     @State private var animating: Bool = false
     @State private var orangeYOffset: CGFloat = 0
     @State private var yellowYOffset: CGFloat = 0
     
-    public init(_ level: Binding<Double>) {
+    public init(_ level: Binding<Double>, started: Binding<Bool>) {
         _level = level
+        _started = started
     }
     
     public var body: some View {
@@ -53,11 +54,8 @@ public struct TalkingView: View {
         }
         .ignoresSafeArea()
         .animation(.easeInOut, value: started)
-        .task {
-            try? await Task.sleep(for: .seconds(1))
-            started.toggle()
-            try? await Task.sleep(for: .seconds(0.6))
-            animating.toggle()
+        .onChange(of: started) { value in
+            animating = started
         }
         .onChange(of: level) { value in
             withAnimation(.easeInOut) {
@@ -78,12 +76,15 @@ public struct TalkingView: View {
 
 struct TestTalkingView: View {
     @State private var level: Double = 0
+    @State private var started: Bool = false
     
     var body: some View {
-        TalkingView($level)
+        TalkingView($level, started: $started)
             .task {
+                try? await Task.sleep(for: .seconds(1))
+                started.toggle()
                 repeat {
-                    try? await Task.sleep(for: .seconds(1))
+                    try? await Task.sleep(for: .seconds(0.3))
                     level = Double((0...100).randomElement()!)/100
                 } while true
             }
