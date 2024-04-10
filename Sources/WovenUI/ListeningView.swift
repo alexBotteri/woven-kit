@@ -1,10 +1,14 @@
 import SwiftUI
 
 public struct ListeningView: View {
-    public let started: Bool
+    let started: Bool
     @State private var yOffset = 0.0
     @State private var xOffset = 0.0
     @State private var left: Bool = true
+    
+    public init(_ started: Bool = true) {
+        self.started = started
+    }
     
     public var body: some View {
         ZStack {
@@ -66,5 +70,5 @@ public struct ListeningView: View {
 }
 
 #Preview {
-    ListeningView(started: false)
+    ListeningView(false)
 }
