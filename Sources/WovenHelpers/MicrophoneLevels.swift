@@ -34,13 +34,15 @@ public final class MicrophoneLevels: ObservableObject {
     }
     
     public func start() {
+        guard audioRecorder != nil else { return }
         audioRecorder.isMeteringEnabled = true
         audioRecorder.record()
     }
     
     public func updateLevels() {
+        guard audioRecorder != nil else { return }
         audioRecorder.updateMeters()
-        currentLevel = min(Double(audioRecorder.averagePower(forChannel: 0))/100.0, 1.0)
+        currentLevel = min(Double(audioRecorder.averagePower(forChannel: 0))/80.0, 1.0)
     }
     
     deinit {
