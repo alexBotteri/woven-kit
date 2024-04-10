@@ -1,13 +1,11 @@
 import SwiftUI
 
 public struct ListeningView: View {
-    let started: Bool
     @State private var yOffset = 0.0
     @State private var xOffset = 0.0
     @State private var left: Bool = true
     
-    public init(_ started: Bool = true) {
-        self.started = started
+    public init() {
     }
     
     public var body: some View {
@@ -46,9 +44,7 @@ public struct ListeningView: View {
         .animation(.easeInOut(duration: 3).repeatForever().delay(0.7), value: left)
         .task {
             try? await Task.sleep(for: .seconds(1))
-            if started {
-                left.toggle()
-            }
+            left.toggle()
         }
     }
     
@@ -70,5 +66,5 @@ public struct ListeningView: View {
 }
 
 #Preview {
-    ListeningView(false)
+    ListeningView()
 }
