@@ -13,9 +13,14 @@ let package = Package(
         .library(
             name: "WovenUI", 
             targets: ["WovenUI"]
+        ),
+        .library(
+            name: "WovenHelpers",
+            targets: ["WovenHelpers"]
         )
     ],
     targets: [
-        .target(name: "WovenUI")
+        .target(name: "WovenUI"),
+        .target(name: "WovenHelpers")
     ]
 )
