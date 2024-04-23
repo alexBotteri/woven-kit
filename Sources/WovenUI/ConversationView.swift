@@ -57,8 +57,15 @@ public struct ConversationView: View {
             case .listening:
                 listenLevel = false
                 let duration: TimeInterval = 0.3
-                withAnimation(.easeInOut(duration: duration), moveBottomLeft)
-                try? await Task.sleep(for: .seconds(duration))
+                if orange.width == 0 {
+                    withAnimation(.easeInOut(duration: duration), moveBottom)
+                    try? await Task.sleep(for: .seconds(duration))
+                    withAnimation(.easeInOut(duration: 1.5), moveLeft)
+                    try? await Task.sleep(for: .seconds(2.2))
+                } else {
+                    withAnimation(.easeInOut(duration: duration), moveBottomLeft)
+                    try? await Task.sleep(for: .seconds(duration))
+                }
                 withAnimation(.easeInOut(duration: 3).repeatForever().delay(0.7), moveBottomRight)
             case .talking:
                 let duration: TimeInterval = 0.3
@@ -103,6 +110,16 @@ public struct ConversationView: View {
         orange.height = yOffset
         yellow.width = 0
         yellow.height = yOffset - 20
+    }
+    
+    private func moveBottom() {
+        orange.height = yOffset
+        yellow.height = yOffset - 20
+    }
+    
+    private func moveLeft() {
+        orange.width = -xOffset
+        yellow.width = 90 - xOffset
     }
 }
 
