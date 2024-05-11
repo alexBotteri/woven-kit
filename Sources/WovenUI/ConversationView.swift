@@ -8,6 +8,8 @@ public struct ConversationView: View {
     @State private var listenLevel: Bool = false
     @State private var orange: CGSize = .zero
     @State private var yellow: CGSize = .zero
+    let duration: TimeInterval = 0.3
+    @State private var scale = 1.0
     
     public init(_ animation: Binding<AnimationState>, level: Binding<Double>) {
         _level = level
@@ -19,20 +21,16 @@ public struct ConversationView: View {
             Color.beige
             Circle()
                 .fill(
-                    RadialGradient(colors: [.yellowAccent, .clear], center: .center, startRadius: 0, endRadius: 120)
+                    RadialGradient(colors: [.yellowAccent, .clear], center: .center, startRadius: 0, endRadius: 120 * scale)
                 )
-                .frame(width: 300, height: 300)
+                .frame(width: 400 * scale, height: 400 * scale)
                 .offset(yellow)
             Circle()
                 .fill(
-                    RadialGradient(colors: [.orangeAccent, .clear], center: .center, startRadius: 0, endRadius: 60)
+                    RadialGradient(colors: [.orangeAccent, .clear], center: .center, startRadius: 0, endRadius: 60 * scale)
                 )
-                .frame(width: 120, height: 120)
+                .frame(width: 120 * scale, height: 120 * scale)
                 .offset(orange)
-            dot
-                .offset(x: 100 - xOffset, y: yOffset - 100)
-            dot
-                .offset(x: xOffset - 90, y: yOffset - 120)
             Rectangle()
                 .fill(.ultraThinMaterial)
                 .background(
@@ -49,36 +47,31 @@ public struct ConversationView: View {
         }
         .ignoresSafeArea()
         .task(id: animation) {
-            try? await Task.sleep(for: .seconds(0.01))
             switch animation {
             case .idle:
                 listenLevel = false
-                withAnimation(.easeInOut, moveBottomLeft)
+                withAnimation(.snappy, moveBottomLeft)
             case .listening:
                 listenLevel = false
-                let duration: TimeInterval = 0.3
+                
                 if orange.width == 0 {
-                    withAnimation(.easeInOut(duration: duration), moveBottom)
-                    try? await Task.sleep(for: .seconds(duration))
-                    withAnimation(.easeInOut(duration: 1.5), moveLeft)
-                    try? await Task.sleep(for: .seconds(2.2))
+                    withAnimation(.snappy(duration: 1), moveBottom)
+                    withAnimation(.snappy(duration: 1), moveLeft)
                 } else {
-                    withAnimation(.easeInOut(duration: duration), moveBottomLeft)
-                    try? await Task.sleep(for: .seconds(duration))
+                    withAnimation(.snappy(duration: 1), moveBottomLeft)
                 }
-                withAnimation(.easeInOut(duration: 3).repeatForever().delay(0.7), moveBottomRight)
+                withAnimation(.linear(duration: 2).repeatForever().delay(0), moveBottomRight)
             case .talking:
-                let duration: TimeInterval = 0.3
-                withAnimation(.easeInOut(duration: duration), moveBottomCenter)
-                try? await Task.sleep(for: .seconds(duration))
+                withAnimation(.snappy(duration: duration), moveBottomCenter)
                 listenLevel = true
             }
         }
         .onChange(of: level) { level in
             guard listenLevel else {return}
-            withAnimation(.easeInOut) {
+            withAnimation(.bouncy) {
                 orange.height = yOffset - level*120.0
-                yellow.height = yOffset - 40 - level*80.0
+                yellow.height = yOffset - 20 - level*80.0
+                scale = level/2 + 1
             }
         }
     }
@@ -86,7 +79,7 @@ public struct ConversationView: View {
     private var dot: some View {
         Circle()
             .fill(
-                RadialGradient(colors: [.beige, .clear], center: .center, startRadius: 0, endRadius: 60)
+                RadialGradient(colors: [.beige, .clear], center: .center, startRadius: 0, endRadius: 60 * scale)
             )
             .frame(width: 100, height: 100)
     }
@@ -94,15 +87,17 @@ public struct ConversationView: View {
     private func moveBottomLeft() {
         orange.width = -xOffset
         orange.height = yOffset
-        yellow.width = 90 - xOffset
+        yellow.width = 60 - xOffset
         yellow.height = yOffset - 20
+        scale = 1
     }
     
     private func moveBottomRight() {
         orange.width = xOffset
         orange.height = yOffset
-        yellow.width = xOffset - 90
+        yellow.width = xOffset - 60
         yellow.height = yOffset - 20
+        scale = 1
     }
     
     private func moveBottomCenter() {
@@ -115,11 +110,13 @@ public struct ConversationView: View {
     private func moveBottom() {
         orange.height = yOffset
         yellow.height = yOffset - 20
+        scale = 1
     }
     
     private func moveLeft() {
         orange.width = -xOffset
-        yellow.width = 90 - xOffset
+        yellow.width = 60 - xOffset
+        scale = 1
     }
 }
 
